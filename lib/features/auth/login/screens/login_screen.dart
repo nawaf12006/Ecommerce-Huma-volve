@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:ecommerce_app_huma_volve/core/error/dio_error_handler.dart';
 import 'package:ecommerce_app_huma_volve/core/theme.dart';
+import 'package:ecommerce_app_huma_volve/core/widgets/app_toastification.dart';
 import 'package:ecommerce_app_huma_volve/core/widgets/custom_text_field.dart';
 import 'package:ecommerce_app_huma_volve/core/widgets/primary_button.dart';
 import 'package:ecommerce_app_huma_volve/features/auth/login/services/login_services.dart';
 import 'package:ecommerce_app_huma_volve/features/auth/sign_up/screens/sign_up_screen.dart';
 import 'package:ecommerce_app_huma_volve/features/main_navigation/screens/main_navigation_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:toastification/toastification.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -133,6 +135,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           MaterialPageRoute(
                             builder: (context) => const MainNavigationScreen(),
                           ),
+                        );
+                        AppToastification.coustomToastificationWidget(
+                          title: 'Login Successful',
+                          description:
+                              'Welcome back! You have logged in successfully',
+                          type: ToastificationType.success,
                         );
                       } on DioException catch (e) {
                         isLoading = false;

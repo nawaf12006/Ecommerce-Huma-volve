@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:ecommerce_app_huma_volve/core/error/dio_error_handler.dart';
 import 'package:ecommerce_app_huma_volve/core/theme.dart';
+import 'package:ecommerce_app_huma_volve/core/widgets/app_toastification.dart';
 import 'package:ecommerce_app_huma_volve/core/widgets/custom_text_field.dart';
 import 'package:ecommerce_app_huma_volve/core/widgets/primary_button.dart';
 import 'package:ecommerce_app_huma_volve/features/auth/login/screens/login_screen.dart';
@@ -8,6 +9,7 @@ import 'package:ecommerce_app_huma_volve/features/auth/sign_up/models/sigup_req_
 import 'package:ecommerce_app_huma_volve/features/auth/sign_up/services/signup_services.dart';
 import 'package:ecommerce_app_huma_volve/features/main_navigation/screens/main_navigation_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:toastification/toastification.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -140,6 +142,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           MaterialPageRoute(
                             builder: (context) => const MainNavigationScreen(),
                           ),
+                        );
+                        AppToastification.coustomToastificationWidget(
+                          title: 'Account Created Successfully',
+                          description:
+                              'Your account has been created successfully',
+                          type: ToastificationType.success,
                         );
                       } on DioException catch (e) {
                         isLoading = false;
