@@ -1,9 +1,13 @@
+import 'package:dio/dio.dart';
+import 'package:ecommerce_app_huma_volve/core/error/dio_error_handler.dart';
+import 'package:ecommerce_app_huma_volve/core/theme.dart';
+import 'package:ecommerce_app_huma_volve/core/widgets/custom_text_field.dart';
+import 'package:ecommerce_app_huma_volve/core/widgets/primary_button.dart';
+import 'package:ecommerce_app_huma_volve/features/auth/login/screens/login_screen.dart';
+import 'package:ecommerce_app_huma_volve/features/auth/sign_up/models/sigup_req_model.dart';
+import 'package:ecommerce_app_huma_volve/features/auth/sign_up/services/signup_services.dart';
+import 'package:ecommerce_app_huma_volve/features/main_navigation/screens/main_navigation_screen.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../core/widgets/custom_text_field.dart';
-import '../../../../core/widgets/primary_button.dart';
-import '../../../../core/theme.dart';
-import '../../login/screens/login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -17,12 +21,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
   late final TextEditingController nameController;
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
+  late final SignupServices signupServices;
+  bool isLoading = false;
 
   @override
   void initState() {
     nameController = TextEditingController();
     emailController = TextEditingController();
     passwordController = TextEditingController();
+    signupServices = SignupServices();
 
     super.initState();
   }
@@ -66,6 +73,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 48),
                 CustomTextField(
                   controller: nameController,
+                  keyboardType: TextInputType.name,
                   hintText: 'Full Name',
                   prefixIcon: Icons.person_outline,
                   validator: (value) {
@@ -94,6 +102,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 20),
                 CustomTextField(
                   controller: passwordController,
+                  keyboardType: TextInputType.visiblePassword,
                   hintText: 'Password',
                   prefixIcon: Icons.lock_outline,
                   isPassword: true,
@@ -110,14 +119,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 40),
                 PrimaryButton(
                   text: 'Sign Up',
+                  isLoading: isLoading,
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                      );
+                      try {
+                        isLoading = true;
+                        setState(() {});
+                        await signupServices.signup(
+                          SigupReqModel(
+                            name: nameController.text.trim(),
+                            email: emailController.text.trim(),
+                            password: passwordController.text.trim(),
+                          ),
+                        );
+                        isLoading = false;
+                        setState(() {});
+
+                        if (!context.mounted) return;
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => const MainNavigationScreen(),
+                          ),
+                        );
+                      } on DioException catch (e) {
+                        isLoading = false;
+                        setState(() {});
+                        DioErrorHandler.handle(e);
+                      }
                     }
                   },
                 ),

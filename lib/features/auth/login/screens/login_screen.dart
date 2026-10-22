@@ -1,11 +1,12 @@
-
+import 'package:dio/dio.dart';
+import 'package:ecommerce_app_huma_volve/core/error/dio_error_handler.dart';
+import 'package:ecommerce_app_huma_volve/core/theme.dart';
+import 'package:ecommerce_app_huma_volve/core/widgets/custom_text_field.dart';
+import 'package:ecommerce_app_huma_volve/core/widgets/primary_button.dart';
+import 'package:ecommerce_app_huma_volve/features/auth/login/services/login_services.dart';
+import 'package:ecommerce_app_huma_volve/features/auth/sign_up/screens/sign_up_screen.dart';
+import 'package:ecommerce_app_huma_volve/features/main_navigation/screens/main_navigation_screen.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../core/widgets/custom_text_field.dart';
-import '../../../../core/widgets/primary_button.dart';
-import '../../../../core/theme.dart';
-import '../../../main_navigation/screens/main_navigation_screen.dart';
-import '../../sign_up/screens/sign_up_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,11 +19,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
+  late final LoginServices loginServices;
+  bool isLoading = false;
 
   @override
   void initState() {
     emailController = TextEditingController();
     passwordController = TextEditingController();
+    loginServices = LoginServices();
 
     super.initState();
   }
@@ -31,6 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+
     super.dispose();
   }
 
@@ -81,6 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 20),
                 CustomTextField(
                   controller: passwordController,
+                  keyboardType: TextInputType.visiblePassword,
                   hintText: 'Password',
                   prefixIcon: Icons.lock_outline,
                   isPassword: true,
@@ -108,13 +114,31 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 32),
                 PrimaryButton(
                   text: 'Login',
-                  onPressed: () {
+                  isLoading: isLoading,
+                  onPressed: () async {
+                    if (isLoading) return;
+
                     if (_formKey.currentState?.validate() ?? false) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => MainNavigationScreen(),
-                        ),
-                      );
+                      isLoading = true;
+                      setState(() {});
+                      try {
+                        await loginServices.login(
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim(),
+                        );
+                        isLoading = false;
+                        setState(() {});
+                        if (!context.mounted) return;
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => const MainNavigationScreen(),
+                          ),
+                        );
+                      } on DioException catch (e) {
+                        isLoading = false;
+                        setState(() {});
+                        DioErrorHandler.handle(e);
+                      }
                     }
                   },
                 ),
