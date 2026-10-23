@@ -1,15 +1,16 @@
+import 'package:ecommerce_app_huma_volve/core/enums/request_status_enum.dart';
 import 'package:ecommerce_app_huma_volve/core/theme.dart';
 import 'package:flutter/material.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
-  bool isLoading;
+  RequestStatusEnum status;
   PrimaryButton({
     super.key,
     required this.text,
     required this.onPressed,
-    this.isLoading = false,
+    this.status = RequestStatusEnum.initial,
   });
 
   @override
@@ -43,8 +44,15 @@ class PrimaryButton extends StatelessWidget {
           ),
           minimumSize: const Size(double.infinity, 56),
         ),
-        child: isLoading
-            ? CircularProgressIndicator(color: Colors.white)
+        child: status == RequestStatusEnum.loading
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Color(0xFFFFF1A8),
+                  strokeWidth: 2,
+                ),
+              )
             : Text(
                 text,
                 style: const TextStyle(

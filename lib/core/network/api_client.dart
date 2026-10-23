@@ -4,7 +4,7 @@ import 'package:ecommerce_app_huma_volve/core/network/interceptors/logging_inter
 
 class ApiClient {
   static Dio createDio() {
-    final dio = Dio(BaseOptions(baseUrl: AuthApiConfig.baseUrl));
+    final dio = Dio(BaseOptions(baseUrl: ApiConfig.baseUrl));
     dio.interceptors.add(LoggingInterceptor());
 
     return dio;

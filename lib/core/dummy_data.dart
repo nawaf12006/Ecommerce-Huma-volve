@@ -112,4 +112,4 @@ final dummyCategories = [
   'Clothing',
   'Accessories',
   'Electronics',
-];
+];  
